@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Plan de Cambio Físico · Javi</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #fafbfc;
+  color: #1a2332;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+.header {
+  background: linear-gradient(135deg, #1f3a5f 0%, #2e5984 100%);
+  color: white;
+  padding: 24px 28px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(31, 58, 95, 0.15);
+}
+.header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+.header p { margin: 0; opacity: 0.85; font-size: 13px; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat {
+  background: white;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e6eaef;
+}
+.stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7785; margin-bottom: 4px; font-weight: 600; }
+.stat .value { font-size: 20px; font-weight: 700; color: #1f3a5f; }
+.stat .sub { font-size: 11px; color: #8895a5; margin-top: 2px; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e6eaef;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7785;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+}
+.tab:hover { color: #1f3a5f; }
+.tab.active {
+  color: #1f3a5f;
+  border-bottom-color: #1f3a5f;
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card {
+  background: white;
+  border: 1px solid #e6eaef;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.card h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #1f3a5f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 .badge {
+  font-size: 11px;
+  background: #e8f1f8;
+  color: #1f3a5f;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table th {
+  text-align: left;
+  background: #f5f7fa;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: #455365;
+  border-bottom: 1px solid #e6eaef;
+}
+table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f3f6;
+}
+table tr:last-child td { border-bottom: none; }
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.day-btn {
+  padding: 10px 6px;
+  background: white;
+  border: 1px solid #e6eaef;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7785;
+  transition: all 0.15s;
+}
+.day-btn:hover { border-color: #1f3a5f; color: #1f3a5f; }
+.day-btn.active {
+  background: #1f3a5f;
+  color: white;
+  border-color: #1f3a5f;
+}
+.day-btn .sub { display: block; font-size: 10px; font-weight: 400; opacity: 0.75; margin-top: 2px; }
+
+.checklist { list-style: none; padding: 0; margin: 0; }
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fafbfc;
+  border: 1px solid #eef1f4;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13px;
+}
+.checklist li:hover { background: #f5f8fb; }
+.checklist li.done {
+  background: #ecf6ee;
+  border-color: #c8e6c9;
+  color: #2d6a4f;
+  text-decoration: line-through;
+  text-decoration-color: rgba(45, 106, 79, 0.4);
+}
+.checklist input[type=checkbox] {
+  width: 16px; height: 16px; cursor: pointer; accent-color: #1f3a5f;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #eef1f4;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.progress-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, #2e8b57 0%, #3aa56a 100%);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.macro {
+  background: #fafbfc;
+  border: 1px solid #eef1f4;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.macro .name { font-size: 11px; text-transform: uppercase; color: #6b7785; font-weight: 600; letter-spacing: 0.3px; }
+.macro .val { font-size: 22px; font-weight: 700; color: #1f3a5f; margin-top: 4px; }
+.macro .unit { font-size: 11px; color: #8895a5; }
+
+.exercise-table { font-size: 12.5px; }
+.exercise-table th:first-child, .exercise-table td:first-child { width: 30px; text-align: center; color: #8895a5; }
+.exercise-table td.reps { font-weight: 600; color: #1f3a5f; }
+.exercise-table td.rir { color: #6b7785; font-size: 11.5px; }
+
+.muted { color: #6b7785; font-size: 12px; margin-top: 6px; }
+.tip {
+  background: #fff8e6;
+  border-left: 3px solid #f0b54a;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin: 12px 0;
+  color: #6b5523;
+}
+.tip strong { color: #8a6a1a; }
+
+.meal { margin-bottom: 12px; }
+.meal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 600;
+  color: #1f3a5f;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.meal-time { font-size: 12px; color: #6b7785; font-weight: 500; }
+.meal-body { font-size: 13px; color: #455365; line-height: 1.55; }
+.kcal-pill { background: #e8f1f8; color: #1f3a5f; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+
+.reset-btn {
+  background: white;
+  border: 1px solid #d6dde5;
+  color: #6b7785;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: auto;
+}
+.reset-btn:hover { background: #fafbfc; color: #1f3a5f; border-color: #1f3a5f; }
+
+.weekly-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ecf6ee;
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #2d6a4f;
+}
+
+@media (max-width: 720px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .macro-grid { grid-template-columns: repeat(2, 1fr); }
+  .day-grid { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <h1>Plan de Cambio Físico · 12 semanas</h1>
+  <p>Recomposición corporal · Inicio 18 mayo 2026 · Finalización estimada 10 agosto 2026</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat">
+    <div class="label">Peso actual</div>
+    <div class="value">83.5 kg</div>
+    <div class="sub">Objetivo: 79-81 kg</div>
+  </div>
+  <div class="stat">
+    <div class="label">Calorías día</div>
+    <div class="value">2.700</div>
+    <div class="sub">2.500 días de descanso</div>
+  </div>
+  <div class="stat">
+    <div class="label">Proteína</div>
+    <div class="value">185 g</div>
+    <div class="sub">2.2 g/kg</div>
+  </div>
+  <div class="stat">
+    <div class="label">Entrenos / semana</div>
+    <div class="value">6</div>
+    <div class="sub">4 pesas + 2 boxeo</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-panel="entreno">Entrenamiento</button>
+  <button class="tab" data-panel="dieta">Alimentación</button>
+  <button class="tab" data-panel="suplementos">Suplementos</button>
+  <button class="tab" data-panel="sueno">Sueño</button>
+  <button class="tab" data-panel="checklist">Checklist hoy</button>
+  <button class="tab" data-panel="progreso">Progreso</button>
+</div>
+
+<!-- ENTRENAMIENTO -->
+<div class="panel active" id="entreno">
+  <div class="day-grid" id="dayGrid"></div>
+  <div id="dayContent"></div>
+</div>
+
+<!-- DIETA -->
+<div class="panel" id="dieta">
+  <div class="card">
+    <h3>Macros objetivo <span class="badge">día entreno · 2.700 kcal</span></h3>
+    <div class="macro-grid">
+      <div class="macro"><div class="name">Proteína</div><div class="val">185<span class="unit"> g</span></div></div>
+      <div class="macro"><div class="name">Carbohidratos</div><div class="val">320<span class="unit"> g</span></div></div>
+      <div class="macro"><div class="name">Grasas</div><div class="val">75<span class="unit"> g</span></div></div>
+      <div class="macro"><div class="name">Fibra</div><div class="val">35<span class="unit"> g+</span></div></div>
+    </div>
+    <div class="tip"><strong>Día de descanso:</strong> bajar a 2.500 kcal (reducir 100 g de carbohidratos). <strong>Refeed semanal:</strong> 3.000 kcal y 400 g de carbohidratos tras el día más exigente.</div>
+  </div>
+
+  <div class="card">
+    <h3>Estructura de comidas</h3>
+    <div id="mealsList"></div>
+  </div>
+
+  <div class="card">
+    <h3>Alimentos prioritarios</h3>
+    <table>
+      <tr><th>Categoría</th><th>Opciones</th></tr>
+      <tr><td><b>Proteínas</b></td><td>Pollo, pavo, ternera magra, huevos, pescado blanco, salmón, sardinas, atún, lentejas, garbanzos, tofu</td></tr>
+      <tr><td><b>Carbohidratos</b></td><td>Arroz integral, quinoa, avena, pasta integral, patata, boniato, pan integral 100%, legumbres</td></tr>
+      <tr><td><b>Verduras</b></td><td>Brócoli, espinacas, kale, pimientos, calabacín, espárragos, judías verdes, tomate, coliflor</td></tr>
+      <tr><td><b>Frutas</b></td><td>Plátano, manzana, fresas, arándanos, kiwi, naranja, piña, pera</td></tr>
+      <tr><td><b>Grasas</b></td><td>AOVE, aguacate, frutos secos, semillas, pescado azul, aceitunas</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Hidratación</h3>
+    <p style="margin:4px 0">3 - 3.5 L de agua al día · +0.5 L extra por cada hora de entreno intenso (boxeo, pierna).</p>
+  </div>
+</div>
+
+<!-- SUPLEMENTOS -->
+<div class="panel" id="suplementos">
+  <div class="card">
+    <h3>Stack esencial (basado en evidencia)</h3>
+    <table>
+      <tr><th>Suplemento</th><th>Dosis</th><th>Cuándo</th><th>Para qué</th></tr>
+      <tr><td><b>Proteína whey</b></td><td>30 g</td><td>Post-entreno o entre comidas</td><td>Cerrar 185 g/día</td></tr>
+      <tr><td><b>Creatina monohidrato</b></td><td>5 g</td><td>Cualquier hora · diario · también descanso</td><td>Fuerza, hipertrofia, recuperación</td></tr>
+      <tr><td><b>Omega-3 (EPA+DHA)</b></td><td>2 g de EPA+DHA</td><td>Con comida principal</td><td>Antiinflamatorio, salud cardio</td></tr>
+      <tr><td><b>Vitamina D3</b></td><td>2.000-4.000 UI</td><td>Mañana con grasa</td><td>Hormonal, ósea, inmune</td></tr>
+    </table>
+    <div class="tip"><strong>Notas:</strong> No hace falta fase de carga de creatina. Revisa que el omega-3 indique EPA+DHA reales, no peso total de la cápsula. Idealmente analítica de vitamina D antes y a las 12 semanas.</div>
+  </div>
+
+  <div class="card">
+    <h3>Lo que NO necesitas</h3>
+    <p style="margin:4px 0; font-size:13px; color:#455365">Quemagrasas, BCAAs, L-carnitina, glutamina, testosterona booster herbales, preentrenos cargados. Para tu objetivo no aportan nada que dieta y entreno no aporten ya. La cafeína (200 mg, 30 min antes) sí puede usarse puntualmente en días pesados, nunca después de las 14:00.</p>
+  </div>
+</div>
+
+<!-- SUEÑO -->
+<div class="panel" id="sueno">
+  <div class="card">
+    <h3>Reglas no negociables</h3>
+    <ul style="padding-left:20px; margin:6px 0;">
+      <li><b>7.5-9 h cada noche.</b> Tu mayor ventaja competitiva en este plan.</li>
+      <li>Horario consistente (±30 min) incluso fines de semana.</li>
+      <li>Última cafeína antes de las 14:00.</li>
+      <li>Cena 2-3 h antes de acostarte.</li>
+      <li>Pantallas off 60 min antes de dormir.</li>
+      <li>Habitación a 18-20 °C, oscura y silenciosa.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Rutina pre-sueño (45 min)</h3>
+    <table>
+      <tr><th>Min</th><th>Acción</th></tr>
+      <tr><td>-45</td><td>Apagar pantallas principales. Luz tenue en casa.</td></tr>
+      <tr><td>-30</td><td>Ducha tibia. Estiramientos suaves o respiración 4-7-8 (5 ciclos).</td></tr>
+      <tr><td>-15</td><td>Lectura ligera en papel o audio relajante.</td></tr>
+      <tr><td>0</td><td>A la cama. Si en 20 min no duermes, levántate y haz algo aburrido hasta tener sueño.</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="panel" id="checklist">
+  <div class="card">
+    <h3>
+      Hábitos de hoy
+      <span class="badge" id="checkProgress">0/10</span>
+      <button class="reset-btn" id="resetChecklist">Reiniciar día</button>
+    </h3>
+    <div class="progress-bar"><div id="checkBar" style="width:0%"></div></div>
+    <ul class="checklist" id="checkList"></ul>
+    <div class="muted">Se guarda automáticamente en este navegador. Reinicia cada mañana.</div>
+  </div>
+</div>
+
+<!-- PROGRESO -->
+<div class="panel" id="progreso">
+  <div class="card">
+    <h3>Registrar pesaje</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <input type="number" step="0.1" id="weightInput" placeholder="83.5" style="padding:8px 12px; border:1px solid #d6dde5; border-radius:6px; font-size:14px; width:120px;" />
+      <span style="color:#6b7785; font-size:13px;">kg</span>
+      <input type="date" id="dateInput" style="padding:8px 12px; border:1px solid #d6dde5; border-radius:6px; font-size:14px;" />
+      <button id="addWeight" style="background:#1f3a5f; color:white; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Añadir</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Evolución del peso</h3>
+    <canvas id="weightChart" height="180"></canvas>
+    <div id="weightSummary" class="muted" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Métricas a seguir</h3>
+    <table>
+      <tr><th>Métrica</th><th>Frecuencia</th><th>Objetivo 12 semanas</th></tr>
+      <tr><td>Peso corporal</td><td>3x/semana (L-X-V mañana)</td><td>79-81 kg</td></tr>
+      <tr><td>Cintura</td><td>Cada 2 semanas</td><td>-4 a -6 cm</td></tr>
+      <tr><td>Pecho / cadera / brazo / muslo</td><td>Cada 2 semanas</td><td>Brazo y pecho ↑, cadera ↓</td></tr>
+      <tr><td>Fotos progreso</td><td>Cada 4 semanas</td><td>Frontal, lateral, espalda</td></tr>
+      <tr><td>Fuerza en básicos</td><td>Cada sesión</td><td>+10-15% en 12 semanas</td></tr>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<script>
+// ===== Data =====
+const DAYS = [
+  { id: 'lun', name: 'Lun', short: 'Pesas', type: 'upperA' },
+  { id: 'mar', name: 'Mar', short: 'Boxeo', type: 'boxeo1' },
+  { id: 'mie', name: 'Mié', short: 'Pesas', type: 'lowerA' },
+  { id: 'jue', name: 'Jue', short: 'Pesas', type: 'upperB' },
+  { id: 'vie', name: 'Vie', short: 'Boxeo', type: 'boxeo2' },
+  { id: 'sab', name: 'Sáb', short: 'Pesas+HIIT', type: 'lowerB' },
+  { id: 'dom', name: 'Dom', short: 'Descanso', type: 'descanso' }
+];
+
+const WORKOUTS = {
+  upperA: {
+    title: 'Lunes — Upper A · Push focus',
+    subtitle: 'Pecho · Hombros · Tríceps · 75 min',
+    exercises: [
+      ['Press banca con barra', '4 x 6-8', 'RIR 1-2 · 2-3 min'],
+      ['Press militar con mancuernas', '4 x 8-10', 'RIR 2 · 2 min'],
+      ['Aperturas en polea cruzada (low to high)', '3 x 12-15', 'RIR 1 · 90 s'],
+      ['Elevaciones laterales con mancuernas', '4 x 12-15', 'RIR 0-1 · 60 s'],
+      ['Press francés con mancuernas', '3 x 10-12', 'RIR 1-2 · 90 s'],
+      ['Fondos en paralelas (lastrar si quedan +5 reps)', '3 x 8-12', 'RIR 1 · 90 s']
+    ],
+    tip: 'Calienta hombros antes (manguito + face pulls ligeros). Si el press banca con barra molesta, sustituye por press con mancuernas.'
+  },
+  boxeo1: {
+    title: 'Martes — Boxeo + Escaleras',
+    subtitle: 'Técnica + cardio moderado · 75-90 min',
+    exercises: [
+      ['Calentamiento (comba + movilidad + sombra)', '10 min', '—'],
+      ['Sesión técnica de boxeo (saco, manoplas, sparring)', '50-60 min', 'Según gimnasio'],
+      ['Escaleras ritmo moderado-alto continuo', '10 min', 'Sin parar'],
+      ['Vuelta a la calma (movilidad y estiramiento)', '5 min', '—']
+    ],
+    tip: 'Día de mucho gasto cardiovascular: hidratación extra (+1 L) y no descuides la proteína post-sesión.'
+  },
+  lowerA: {
+    title: 'Miércoles — Lower A · Cuádriceps y glúteos',
+    subtitle: 'Tren inferior anterior · 75 min',
+    exercises: [
+      ['Sentadilla con barra alta', '4 x 6-8', 'RIR 1-2 · 2-3 min'],
+      ['Prensa inclinada', '4 x 8-10', 'RIR 2 · 2 min'],
+      ['Zancadas caminando con mancuernas', '3 x 10/pierna', 'RIR 1-2 · 90 s'],
+      ['Extensión de cuádriceps en máquina', '3 x 12-15', 'RIR 0-1 · 75 s'],
+      ['Elevación de gemelos de pie', '4 x 12-15', 'RIR 1 · 60 s'],
+      ['Plancha frontal', '3 x 45-60 s', '—']
+    ],
+    tip: 'Calienta caderas y rodillas. Sentadilla: foco en bajar al menos hasta paralelo manteniendo torso firme.'
+  },
+  upperB: {
+    title: 'Jueves — Upper B · Pull focus',
+    subtitle: 'Espalda · Bíceps · 75 min',
+    exercises: [
+      ['Dominadas (lastrar si +8 reps; asistir si <5)', '4 x 6-8', 'RIR 1-2 · 2-3 min'],
+      ['Remo con barra (pendlay o convencional)', '4 x 8-10', 'RIR 2 · 2 min'],
+      ['Jalón al pecho agarre neutro', '3 x 10-12', 'RIR 1-2 · 90 s'],
+      ['Remo en máquina o polea baja', '3 x 10-12', 'RIR 1 · 90 s'],
+      ['Curl bíceps con barra Z', '4 x 10-12', 'RIR 1 · 75 s'],
+      ['Curl martillo con mancuernas', '3 x 10-12', 'RIR 1 · 75 s'],
+      ['Face pull en polea', '3 x 15', 'RIR 0-1 · 60 s']
+    ],
+    tip: 'Las dominadas son tu prioridad: si haces más de 8 limpias, añade lastre. Si menos de 5, usa banda elástica de asistencia.'
+  },
+  boxeo2: {
+    title: 'Viernes — Boxeo + Core dedicado',
+    subtitle: 'Técnica + bloque core · 75-90 min',
+    exercises: [
+      ['Calentamiento (comba + movilidad + sombra)', '10 min', '—'],
+      ['Sesión técnica de boxeo', '60 min', 'Según gimnasio'],
+      ['Core 1: Rueda abdominal (o plancha 45 s)', '3 x 8-12', '60 s descanso'],
+      ['Core 2: Hollow hold', '3 x 30-45 s', '45 s descanso'],
+      ['Core 3: Dead bug alternado', '3 x 10/lado', '45 s descanso'],
+      ['Core 4: Plancha lateral con elevación cadera', '3 x 12/lado', '45 s descanso']
+    ],
+    tip: 'El core trabaja como estabilizador, no como flexor. Foco en mantener pelvis neutra y respiración controlada.'
+  },
+  lowerB: {
+    title: 'Sábado — Lower B + HIIT escaleras',
+    subtitle: 'Femorales · Glúteos · HIIT · 90 min',
+    exercises: [
+      ['Peso muerto rumano con barra', '4 x 6-8', 'RIR 2 · 2-3 min'],
+      ['Hip thrust con barra', '4 x 8-10', 'RIR 1-2 · 2 min'],
+      ['Curl femoral tumbado en máquina', '3 x 12-15', 'RIR 1 · 75 s'],
+      ['Sentadilla búlgara con mancuernas', '3 x 10/pierna', 'RIR 1-2 · 90 s'],
+      ['Elevación de gemelos sentado', '3 x 15', 'RIR 0-1 · 60 s'],
+      ['HIIT escaleras (30s fuerte / 30s bajada activa)', '12 min', 'Pico semanal de cardio']
+    ],
+    tip: 'Si entrenas a primera hora, peso muerto rumano es muy exigente con la zona lumbar — calienta espalda baja con buenos días o hiperextensiones ligeras antes.'
+  },
+  descanso: {
+    title: 'Domingo — Descanso',
+    subtitle: 'Recuperación activa o descanso total',
+    exercises: [
+      ['Caminata ligera (opcional)', '30-60 min', 'Ritmo conversacional'],
+      ['Movilidad suave (opcional)', '10-15 min', '—']
+    ],
+    tip: 'El descanso es parte del entrenamiento, no opcional. Aprovecha para preparar comidas de la semana y dormir bien.'
+  }
+};
+
+const MEALS = [
+  { name: 'Desayuno', time: '7:30-8:30', kcal: 600, body: '80 g avena + 250 ml leche desnatada · 3 huevos enteros + 1 plátano · 30 g nueces · café solo' },
+  { name: 'Media mañana', time: '11:00', kcal: 350, body: 'Yogur griego natural 200 g + 1 manzana + 30 g almendras (o tostada integral + aguacate + pavo)' },
+  { name: 'Comida', time: '14:00', kcal: 750, body: '150 g (crudo) arroz integral/quinoa/pasta integral · 180 g (crudo) pollo/pescado/ternera magra/lentejas · 200 g verdura · 1 cda AOVE · 1 fruta' },
+  { name: 'Pre-entreno', time: '17:30-18:00', kcal: 300, body: '1 plátano + café · tostada integral + miel + crema de cacahuete (60-90 min antes del entreno)' },
+  { name: 'Cena / Post-entreno', time: '20:30-21:30', kcal: 700, body: '200 g pescado azul (salmón/sardinas) o pavo/pollo · 150 g boniato asado o 50 g pan integral · ensalada grande + 1/2 aguacate + 1 cda AOVE' }
+];
+
+const CHECKLIST_ITEMS = [
+  'Dormir 7.5-9 h (anoche)',
+  'Alcanzar 185 g de proteína',
+  'Cumplir calorías objetivo del día',
+  'Beber 3-3.5 L de agua',
+  '5 raciones de fruta + verdura',
+  '8.000-10.000 pasos',
+  'Creatina 5 g',
+  'Omega-3 + vitamina D con alguna comida',
+  'Si toca entreno: registrar pesos y reps',
+  'Pantallas off 60 min antes de dormir'
+];
+
+// ===== Tabs =====
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ===== Day grid =====
+const dayGrid = document.getElementById('dayGrid');
+const dayContent = document.getElementById('dayContent');
+const todayIdx = (new Date().getDay() + 6) % 7; // L=0 ... D=6
+
+DAYS.forEach((d, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'day-btn' + (i === todayIdx ? ' active' : '');
+  btn.innerHTML = `${d.name}<span class="sub">${d.short}</span>`;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderWorkout(d.type);
+  });
+  dayGrid.appendChild(btn);
+});
+
+function renderWorkout(type) {
+  const w = WORKOUTS[type];
+  const rows = w.exercises.map((e, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${e[0]}</td>
+      <td class="reps">${e[1]}</td>
+      <td class="rir">${e[2]}</td>
+    </tr>`).join('');
+  dayContent.innerHTML = `
+    <div class="card">
+      <h3>${w.title}</h3>
+      <div class="muted" style="margin-bottom:12px;">${w.subtitle}</div>
+      <table class="exercise-table">
+        <tr><th>#</th><th>Ejercicio</th><th>Series x Reps</th><th>Intensidad / Descanso</th></tr>
+        ${rows}
+      </table>
+      <div class="tip"><strong>Nota:</strong> ${w.tip}</div>
+    </div>`;
+}
+
+renderWorkout(DAYS[todayIdx].type);
+
+// ===== Meals list =====
+document.getElementById('mealsList').innerHTML = MEALS.map(m => `
+  <div class="meal">
+    <div class="meal-head">
+      <span>${m.name} <span class="kcal-pill">${m.kcal} kcal</span></span>
+      <span class="meal-time">${m.time}</span>
+    </div>
+    <div class="meal-body">${m.body}</div>
+  </div>`).join('');
+
+// ===== Checklist (localStorage) =====
+const todayKey = 'checklist_' + new Date().toISOString().slice(0,10);
+const list = document.getElementById('checkList');
+const bar = document.getElementById('checkBar');
+const progress = document.getElementById('checkProgress');
+
+function loadChecks() {
+  try { return JSON.parse(localStorage.getItem(todayKey) || '[]'); }
+  catch { return []; }
+}
+function saveChecks(arr) { localStorage.setItem(todayKey, JSON.stringify(arr)); }
+
+let checks = loadChecks();
+if (checks.length !== CHECKLIST_ITEMS.length) checks = new Array(CHECKLIST_ITEMS.length).fill(false);
+
+function renderChecklist() {
+  list.innerHTML = CHECKLIST_ITEMS.map((t, i) => `
+    <li class="${checks[i] ? 'done' : ''}" data-i="${i}">
+      <input type="checkbox" ${checks[i] ? 'checked' : ''} />
+      <span>${t}</span>
+    </li>`).join('');
+  const done = checks.filter(Boolean).length;
+  bar.style.width = (done / CHECKLIST_ITEMS.length * 100) + '%';
+  progress.textContent = done + '/' + CHECKLIST_ITEMS.length;
+  list.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', e => {
+      const i = +li.dataset.i;
+      checks[i] = !checks[i];
+      saveChecks(checks);
+      renderChecklist();
+    });
+  });
+}
+renderChecklist();
+
+document.getElementById('resetChecklist').addEventListener('click', () => {
+  checks = new Array(CHECKLIST_ITEMS.length).fill(false);
+  saveChecks(checks);
+  renderChecklist();
+});
+
+// ===== Progress chart (localStorage) =====
+const weightKey = 'weights_javi';
+function loadWeights() {
+  try { return JSON.parse(localStorage.getItem(weightKey) || '[]'); }
+  catch { return []; }
+}
+function saveWeights(arr) { localStorage.setItem(weightKey, JSON.stringify(arr)); }
+
+let weights = loadWeights();
+if (weights.length === 0) {
+  weights = [{ date: '2026-05-18', kg: 83.5 }];
+  saveWeights(weights);
+}
+
+const dateInput = document.getElementById('dateInput');
+dateInput.value = new Date().toISOString().slice(0,10);
+
+let chart = null;
+function renderChart() {
+  weights.sort((a,b) => a.date.localeCompare(b.date));
+  const labels = weights.map(w => w.date.slice(5));
+  const data = weights.map(w => w.kg);
+  const ctx = document.getElementById('weightChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Peso (kg)', data, borderColor: '#1f3a5f', backgroundColor: 'rgba(31,58,95,0.08)',
+          tension: 0.3, pointRadius: 4, pointBackgroundColor: '#1f3a5f', fill: true },
+        { label: 'Objetivo 80 kg', data: labels.map(() => 80), borderColor: '#3aa56a',
+          borderDash: [6,4], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+      scales: {
+        y: { suggestedMin: Math.min(...data, 79) - 1, suggestedMax: Math.max(...data, 84) + 1,
+             grid: { color: '#eef1f4' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+  const first = weights[0].kg, last = weights[weights.length-1].kg;
+  const diff = (last - first).toFixed(1);
+  const sign = diff > 0 ? '+' : '';
+  document.getElementById('weightSummary').textContent =
+    `Inicio: ${first} kg · Último: ${last} kg · Variación: ${sign}${diff} kg · ${weights.length} registros`;
+}
+
+document.getElementById('addWeight').addEventListener('click', () => {
+  const kg = parseFloat(document.getElementById('weightInput').value);
+  const date = dateInput.value;
+  if (!kg || !date) return;
+  const existing = weights.findIndex(w => w.date === date);
+  if (existing >= 0) weights[existing].kg = kg;
+  else weights.push({ date, kg });
+  saveWeights(weights);
+  renderChart();
+  document.getElementById('weightInput').value = '';
+});
+
+renderChart();
+</script>
+</body>
+</html>
